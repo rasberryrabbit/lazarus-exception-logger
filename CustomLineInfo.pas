@@ -117,6 +117,11 @@ var
   c      : cardinal;
   ofm    : word;
   g      : file;
+  {$IF FPC_FullVersion >= 30301}
+  // Fix for FPC Trunk d55fc656
+  buf    : array[0..4095] of byte;
+  bufcnt : longint;
+  {$ENDIF}
 begin
   CheckDbgFile:=false;
   assign(g,fn);
@@ -131,9 +136,15 @@ begin
   { We reuse the buffer from e here to prevent too much stack allocation }
   c:=0;
   repeat
+  {$IF FPC_FullVersion >= 30301}
+    blockread(g,buf,sizeof(buf),bufcnt);
+    c:=UpdateCrc32(c,buf,bufcnt);
+  until bufcnt<sizeof(buf);
+  {$ELSE}
     blockread(g,e.buf,e.bufsize,e.bufcnt);
     c:=UpdateCrc32(c,e.buf,e.bufcnt);
   until e.bufcnt<e.bufsize;
+  {$ENDIF}
   close(g);
   CheckDbgFile:=(dbgcrc=c);
 end;
