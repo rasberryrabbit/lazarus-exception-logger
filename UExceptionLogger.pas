@@ -259,7 +259,11 @@ end;
 
 procedure TExceptionLogger.HandleException(Sender: TObject; E: Exception);
 begin
-  BackTraceStrFunc := {$ifdef LOG_DWARF}@DwarfBackTraceStr{$ELSE}@StabBackTraceStr{$ENDIF};
+  {$ifdef LOG_DWARF}
+  BackTraceStrFunc := @DwarfBackTraceStr;
+  {$else}
+  BackTraceStrFunc := @StabBackTraceStr;
+  {$endif}
   FStackTrace.GetExceptionBackTrace;
   FLastException := E;
   FExceptionSender := Sender;
@@ -401,12 +405,13 @@ end;
 
 initialization
 
-exceptionLogger := TExceptionLogger.Create(Application);
-
 {$IFOPT D+}
   //disables "optimizations" when converting stack to string (in unit lineinfo)
   AllowReuseOfLineInfoData:=false;
 {$endif}
+
+exceptionLogger := TExceptionLogger.Create(Application);
+
 
 
 end.

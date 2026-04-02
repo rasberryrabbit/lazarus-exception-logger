@@ -1,3 +1,8 @@
 {$IFDEF CPU64}
   {$DEFINE LOG_DWARF}
 {$ENDIF}
+{$IF FPC_FULLVERSION>=30301}
+  {$IFDEF CPU32}
+    {$DEFINE LOG_DWARF}
+  {$endif}
+{$Endif}

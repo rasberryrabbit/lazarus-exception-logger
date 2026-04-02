@@ -7,7 +7,8 @@ unit UStackTrace;
 interface
 
 uses
-  Classes, SysUtils, Contnrs, {$IFDEF LOG_DWARF}lnfodwrf{$ELSE}CustomLineInfo{$ENDIF};
+  Classes, SysUtils, Contnrs,
+  {$IFDEF LOG_DWARF}lnfodwrf{$ELSE}CustomLineInfo{$ENDIF};
 
 type
   TStackFrameInfo = class
@@ -101,7 +102,10 @@ begin
   FrameCount := ExceptFrameCount;
   FramesList := ExceptFrames;
   if FrameCount > MaxDepth then FrameCount := MaxDepth;
-  SetLength(Frames, FrameCount + 1);
+  if FrameCount + 1 < 1 then
+    SetLength(Frames, 1)
+  else
+    SetLength(Frames, FrameCount + 1);
   for FrameNumber := 0 to FrameCount - 1 do begin
     Frames[FrameNumber + 1] := FramesList[FrameNumber]
   end;
