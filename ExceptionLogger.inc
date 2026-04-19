@@ -2,7 +2,9 @@
   {$DEFINE LOG_DWARF}
 {$ENDIF}
 {$IF FPC_FULLVERSION>=30301}
-  {$IFDEF CPU32}
-    {$DEFINE LOG_DWARF}
+  {$IF DEBUGINFO_TYPE<>NONE}
+    {$if DEBUGINFO_TYPE<>STABS}
+      {$DEFINE LOG_DWARF}
+    {$endif }
   {$endif}
 {$Endif}
